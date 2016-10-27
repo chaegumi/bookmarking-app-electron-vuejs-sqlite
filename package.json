@@ -1,0 +1,34 @@
+{
+  "name": "bookmarking-app",
+  "version": "1.0.0",
+  "description": "A Bookmarking App using Electron, VueJs and Firebase",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron main.js",
+    "rebuild-sqlite3-win32": "cd node_modules/sqlite3 && npm run prepublish && node-gyp configure --module_name=node_sqlite3 --module_path=../lib/binding/node-v46-win32-x64 && node-gyp rebuild --target=1.4.4 --arch=x64 --target_platform=win32 --dist-url=https://atom.io/download/atom-shell --module_name=node_sqlite3 --module_path=../lib/binding/electron-v1.4-win32-x64"
+  },
+  "author": "chaegumi",
+  "license": "MIT",
+  "dependencies": {
+    "firebase": "^3.5.2",
+    "jquery": "^3.1.1",
+    "sqlite3": "^3.1.7",
+    "vue": "^2.0.3"
+  },
+  "devDependencies": {
+    "babel-core": "^6.18.0",
+    "babel-loader": "^6.2.5",
+    "babel-plugin-transform-runtime": "^6.15.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-runtime": "^5.8.38",
+    "css-loader": "^0.25.0",
+    "electron": "^1.4.4",
+    "vue-hot-reload-api": "^2.0.6",
+    "vue-html-loader": "^1.2.3",
+    "vue-loader": "^9.7.0",
+    "vue-style-loader": "^1.0.0",
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.16.2"
+  }
+}
