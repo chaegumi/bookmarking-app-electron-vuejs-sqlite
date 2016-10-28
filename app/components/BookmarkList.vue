@@ -32,10 +32,6 @@ export default{
 	components:{
 		Bookmark
 	},
-	created:function(){
-		console.log(this.bookmarks1);
-		console.log(this.categories);
-	},
 	computed:{
 		bookmarks:filterByTitle
 	}

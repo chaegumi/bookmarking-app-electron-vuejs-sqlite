@@ -88,13 +88,13 @@ body {
   margin: 15px;
 }
 
-i.remove.icon {
+i.remove.icon, i.edit.icon {
   opacity: 0;
   -webkit-transition: opacity .25s ease-in-out;
   transition: opacity .25s ease-in-out;
 }
 
-div.content:hover i.remove.icon {
+div.content:hover i.remove.icon, div.content:hover i.edit.icon {
   opacity: 1;
 }
 
@@ -132,12 +132,12 @@ div.content:hover i.remove.icon {
   margin-top: 5px;
 }
 
-i.remove.icon {
+i.remove.icon, i.edit.icon {
   opacity: 0;
   -webkit-transition: opacity .25s ease-in-out;
   transition: opacity .25s ease-in-out;
 }
 
-div.content:hover i.remove.icon {
+div.content:hover i.remove.icon, div.content:hover i.edit.icon {
   opacity: 0.5;
 }

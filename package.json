@@ -1,7 +1,7 @@
 {
   "name": "bookmarking-app",
   "version": "1.0.0",
-  "description": "A Bookmarking App using Electron, VueJs and Firebase",
+  "description": "A Bookmarking App using Electron, VueJs and sqlite3",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -11,7 +11,6 @@
   "author": "chaegumi",
   "license": "MIT",
   "dependencies": {
-    "firebase": "^3.5.2",
     "jquery": "^3.1.1",
     "sqlite3": "^3.1.7",
     "vue": "^2.0.3"
@@ -28,6 +27,7 @@
     "vue-html-loader": "^1.2.3",
     "vue-loader": "^9.7.0",
     "vue-style-loader": "^1.0.0",
+    "vue-validator": "^2.1.5",
     "webpack": "^1.13.2",
     "webpack-dev-server": "^1.16.2"
   }

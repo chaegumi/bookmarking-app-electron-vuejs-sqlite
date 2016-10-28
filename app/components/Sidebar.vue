@@ -18,14 +18,18 @@
 							<span @click="categorySelected('')">All</span>
 						</div>
 					</div>
-					<div v-for="(color, name) in categories" class="item clickable">
+					<div v-for="(category, id) in categories" class="item clickable">
 						<div class="content">
-							<a v-bind:class="'ui ' + color + ' empty circular label'"></a>
-							<span @click="categorySelected(name)" :class="{selected:selectedCategory === name}">
-								{{name}}
+							<a v-bind:class="'ui ' + category.catColor + ' empty circular label'"></a>
+							<span @dblclick="editCategory(id)" @click="categorySelected(id)" :class="{selected:selectedCategory === id}">
+								{{category.catName}}
 							</span>
-							<i v-if="name !== 'Uncategorized'" class="remove icon right-float"
-								@click="deleteCategory(name)">
+								
+							<i v-if="category.catName !== 'Uncategorized'" class="remove icon right-float"
+								@click="deleteCategory(id)">
+							</i>
+							<i v-if="category.catName !== 'Uncategorized'" class="edit icon right-float"
+								@click="editCategory(id)">
 							</i>
 						</div>
 					</div>
@@ -59,33 +63,29 @@ export default{
 		BookmarkModal
 	},
 
-	beforeUpdated:function(){
-		console.log(this.categories);
-	},
-/*
-	computed:{
-		classNameColor:function(){
-			return
-		}
-	},*/
-
 	methods:{
 		addBookmark(){
-			console.log('addBookmark');
 			eventHub.$emit('add-bookmark')
 		},
 
 		addCategory(){
 			eventHub.$emit('add-category')
 		},
-
-		deleteCategory(category){
-			store.deleteCategory(category)
+		
+		editCategory(categoryId){
+			console.log(categoryId);
+			eventHub.$emit('edit-category', categoryId);
 		},
 
-		categorySelected(category){
-			this.selectedCategory = category
-			eventHub.$emit('category-selected', category)
+		deleteCategory(categoryId){
+			if(confirm('Are you sure to delete this category?')){
+				store.deleteCategory(categoryId)
+			}
+		},
+
+		categorySelected(categoryId){
+			this.selectedCategory = categoryId
+			eventHub.$emit('category-selected', categoryId)
 		}
 	}
 }

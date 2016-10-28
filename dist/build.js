@@ -7592,7 +7592,7 @@
 	__vue_exports__ = __webpack_require__(3)
 
 	/* template */
-	var __vue_template__ = __webpack_require__(27)
+	var __vue_template__ = __webpack_require__(24)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -7639,15 +7639,15 @@
 
 	var _store2 = _interopRequireDefault(_store);
 
-	var _Sidebar = __webpack_require__(9);
+	var _Sidebar = __webpack_require__(6);
 
 	var _Sidebar2 = _interopRequireDefault(_Sidebar);
 
-	var _BookmarkList = __webpack_require__(19);
+	var _BookmarkList = __webpack_require__(16);
 
 	var _BookmarkList2 = _interopRequireDefault(_BookmarkList);
 
-	var _filters = __webpack_require__(25);
+	var _filters = __webpack_require__(22);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -7684,43 +7684,7 @@
 			};
 		},
 		beforeMount: function beforeMount() {
-			var bookmarks = _store2.default.getBookmarks();
-			var categories = _store2.default.getCategories();
-
-			var bookmarks2 = {};
-			bookmarks2 = bookmarks;
-			var bookmarks3 = {
-				"-KE-NI-AQIM8L3ZC8_Ek": {
-					"category": "Development",
-					"title": "Real-Time Analytics Dashboard",
-					"url": "http://coligo.io/real-time-analytics-with-nodejs-socketio-vuejs/"
-				},
-				"-KE-Od9opi-E7KvvG-LG": {
-					"category": "Development",
-					"title": "Building Large-Scale Apps - VueJs",
-					"url": "http://vuejs.org/guide/application.html"
-				},
-				"-KE-OzR79eW51MP6B-B_": {
-					"category": "Development",
-					"title": "Firebase Web Quickstart",
-					"url": "https://www.firebase.com/docs/web/quickstart.html"
-				},
-				"-KE-P94aT_jmOfUJWEJX": {
-					"category": "Development",
-					"title": "Get started with Electron",
-					"url": "http://electron.atom.io/"
-				}
-			};
-			console.dir(bookmarks2);
-			console.dir(bookmarks3);
-			this.bookmarks = bookmarks3;
-			this.categories = {
-				"Development": "blue",
-				"Design": "purple"
-			};
-			//this.$set(this.data.bookmarks, bookmarks);
-			//	this.$set(this.data.categories, categories);
-			console.log(categories);
+			this.updateListings();
 		},
 
 		/*	computed:{
@@ -7732,27 +7696,26 @@
 	 			filterByCategory
 	 		},*/
 		mounted: function mounted() {
-			//this.loadListings();
-			console.log('listen data-updated');
 			_store2.default.on('data-updated', this.updateListings);
-			//store.changedata();
-		},
-		beforeUpdate: function beforeUpdate() {
-			console.log();
 		},
 
 		methods: {
-			loadListings: function loadListings() {
-				_store2.default.changedata();
+			updateListings: function updateListings() {
+				var _this = this;
+
+				_store2.default.getCategories(function (err, categories) {
+					if (err) {} else {
+						_this.categories = categories;
+					}
+				});
+				_store2.default.getBookmarks(function (err, bookmarks) {
+					if (err) {} else {
+						_this.bookmarks = bookmarks;
+					}
+				});
 			},
-			updateListings: function updateListings(categories, bookmarks) {
-				console.log(categories);
-				console.log(bookmarks);
-				this.categories = categories;
-				this.bookmarks = bookmarks;
-			},
-			setSelectedCategory: function setSelectedCategory(category) {
-				this.selectedCategory = category;
+			setSelectedCategory: function setSelectedCategory(categoryId) {
+				this.selectedCategory = categoryId;
 			}
 		}
 	};
@@ -7767,200 +7730,97 @@
 		value: true
 	});
 
-	var _defineProperty = __webpack_require__(5);
+	var _events = __webpack_require__(5);
 
-	var _defineProperty2 = _interopRequireDefault(_defineProperty);
-
-	var _events = __webpack_require__(8);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	//import Firebase from 'firebase';
-
-	// const db= new Firebase("https://vuejstest-78852.firebaseio.com/");
-	// const categoriesRef = db.child('categories');
-	// const bookmarkRef = db.child('bookmarks');
 	var store = new _events.EventEmitter();
 
-	var categories = {};
-	var bookmarks = {};
-	/*
-	db.on('value', (snapshot) => {
-		var bookmarkData = snapshot.val();
-		if	(bookmarkData) {
-			categories = bookmarkData.categories;
-			bookmarks = bookmarkData.bookmarks;
-			store.emit('data-update', categories, bookmarks);
-		}
-	});
-	*/
-	/*
-	categories = {
-	    "Development" : "blue",
-	    "Design" : "purple"
-	  };
-	bookmarks = {
-	    "-KE-NI-AQIM8L3ZC8_Ek" : {
-	      "category" : "Development",
-	      "title" : "Real-Time Analytics Dashboard",
-	      "url" : "http://coligo.io/real-time-analytics-with-nodejs-socketio-vuejs/"
-	    },
-	    "-KE-Od9opi-E7KvvG-LG" : {
-	      "category" : "Development",
-	      "title" : "Building Large-Scale Apps - VueJs",
-	      "url" : "http://vuejs.org/guide/application.html"
-	    },
-	    "-KE-OzR79eW51MP6B-B_" : {
-	      "category" : "Development",
-	      "title" : "Firebase Web Quickstart",
-	      "url" : "https://www.firebase.com/docs/web/quickstart.html"
-	    },
-	    "-KE-P94aT_jmOfUJWEJX" : {
-	      "category" : "Development",
-	      "title" : "Get started with Electron",
-	      "url" : "http://electron.atom.io/"
-	    }
-	  };
-	store.emit('data-update', categories, bookmarks);
-	*/
+	store.getCategories = function (cb) {
+		var categories = {};
 
-	store.changedata = function () {
-		// search categories
-
-		db.each("select catName, catColor from categories", function (err, row) {
-			categories[row.catName] = row.catColor;
+		db.each("select id, catName, catColor from categories", function (err, row) {
+			// categories[row.catName] = row.catColor;
+			categories[row.id] = row;
+		}, function (err, rowCount) {
+			cb(null, categories);
 		});
-		// search bookmarks
+	};
+
+	store.getCategory = function (catId, cb) {
+		db.get("select id, catName, catColor from categories where id=?", { 1: catId }, function (err, row) {
+			cb(null, row);
+		});
+	};
+
+	store.getBookmarks = function (cb) {
+		var bookmarks = {};
 		db.each("select id, category, title, url from bookmarks", function (err, row) {
 			bookmarks[row.id] = row;
+		}, function (err, rowCount) {
+			cb(null, bookmarks);
 		});
-		console.log(categories);
-		console.log(bookmarks);
-		store.emit('data-updated', categories, bookmarks);
 	};
 
-	store.getCategories = function () {
-		db.each("select catName, catColor from categories", function (err, row) {
-			//categories[row.catName] = row.catColor;
-			(0, _defineProperty2.default)(categories, row.catName, {
-				get: function get() {
-					return row.catColor;
-				},
-				set: function set(val) {
-					categories[row.catName] = row.catColor;
-				}
-			});
+	store.getBookmark = function (bookmarkId, cb) {
+		db.get("select id, category, title, url from bookmarks where id=?", { 1: bookmarkId }, function (err, row) {
+			cb(null, row);
 		});
-		return categories;
-	};
-
-	store.getBookmarks = function () {
-		db.each("select id, category, title, url from bookmarks", function (err, row) {
-			//bookmarks[row.id] = row;
-			(0, _defineProperty2.default)(bookmarks, row.id, {
-				get: function get() {
-					return row;
-				},
-				set: function set(val) {
-					bookmark[row.id] = val;
-				}
-			});
-		});
-		return bookmarks;
 	};
 
 	store.addCategory = function (category) {
-		// categoriesRef.update(category);
-		// console.log(category);
 		db.serialize(function () {
 			var stmt = db.prepare("insert into categories('catName', 'catColor') values(?, ?)");
-			for (var var1 in category) {
-				stmt.run(var1, category[var1]);
-			}
-			//stmt.finalize();
-
-			// update state
-			// store.changedata();
-			db.serialize(function () {
-				db.each("select catName, catColor from categories", function (err, row) {
-					categories[row.catName] = row.catColor;
-				});
-				db.each("select id, category, title, url from bookmarks", function (err, row) {
-					bookmarks[row.id] = row;
-				});
-				console.log(categories);
-				console.log(bookmarks);
-				store.emit('data-updated', categories, bookmarks);
-			});
+			// for (var var1 in category) {
+			// stmt.run(var1, category[var1]);
+			// }
+			stmt.run(category.catName, category.catColor);
+			store.emit('data-updated');
 		});
 	};
 
-	store.deleteCategory = function (catName) {
-		/*	if(!('Uncategorized' in categories)){
-	 		categoriesRef.update({'Uncategorized' : 'white'});
-	 	}
-	 
-	 	for(var key in bookmarks){
-	 		if(bookmarks[key].category === catName){
-	 			bookmarksRef.child(key).update({category:'Uncategorized'});
-	 		}
-	 	}
-	 	categoriesRef.child(catName).remove();*/
+	store.editCategory = function (catId, category) {
 		db.serialize(function () {
-
-			console.log(catName);
-
-			var stmt = db.prepare("delete from categories where catName=?");
-			stmt.run(catName);
-			//stmt.finalize();
-			db.serialize(function () {
-				db.each("select catName, catColor from categories", function (err, row) {
-					categories[row.catName] = row.catColor;
-				});
-				db.each("select id, category, title, url from bookmarks", function (err, row) {
-					bookmarks[row.id] = row;
-				});
-				store.emit('data-updated', categories, bookmarks);
+			db.run("update categories set catName=?, catColor=? where id=?", {
+				1: category.catName,
+				2: category.catColor,
+				3: catId
 			});
+			store.emit('data-updated');
+		});
+	};
+
+	store.deleteCategory = function (catId) {
+		db.serialize(function () {
+			var stmt = db.prepare("delete from categories where id=?");
+			stmt.run(catId);
+			store.emit('data-updated');
 		});
 	};
 
 	store.addBookmark = function (bookmark) {
-		// bookmarksRef.push(bookmark);
-		console.log(bookmark);
 		db.serialize(function () {
 			var stmt = db.prepare("insert into bookmarks('category', 'title', 'url') values(?, ?, ?)");
 			stmt.run(bookmark.category, bookmark.title, bookmark.url);
-			//stmt.finalize();
-			db.serialize(function () {
-				db.each("select catName, catColor from categories", function (err, row) {
-					categories[row.catName] = row.catColor;
-				});
-				db.each("select id, category, title, url from bookmarks", function (err, row) {
-					bookmarks[row.id] = row;
-				});
-				store.emit('data-updated', categories, bookmarks);
+			store.emit('data-updated');
+		});
+	};
+
+	store.editBookmark = function (bookmarkId, bookmark) {
+		db.serialize(function () {
+			db.run("update bookmarks set category=?, title=?, url=? where id=?", {
+				1: bookmark.category,
+				2: bookmark.title,
+				3: bookmark.url,
+				4: bookmarkId
 			});
+			store.emit('data-updated');
 		});
 	};
 
 	store.deleteBookmark = function (bookmarkId) {
-		console.log(bookmarkId);
 		db.serialize(function () {
-			// db.run("delete from bookmarks where id=" + );
 			var stmt = db.prepare("delete from bookmarks where id=?");
 			stmt.run(bookmarkId);
-			//stmt.finalize();
-			// bookmarksRef.child(bookmarkId).remove();
-			db.serialize(function () {
-				db.each("select catName, catColor from categories", function (err, row) {
-					categories[row.catName] = row.catColor;
-				});
-				db.each("select id, category, title, url from bookmarks", function (err, row) {
-					bookmarks[row.id] = row;
-				});
-				store.emit('data-updated', categories, bookmarks);
-			});
+			store.emit('data-updated');
 		});
 	};
 
@@ -7968,39 +7828,6 @@
 
 /***/ },
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = { "default": __webpack_require__(6), __esModule: true };
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var $ = __webpack_require__(7);
-	module.exports = function defineProperty(it, key, desc){
-	  return $.setDesc(it, key, desc);
-	};
-
-/***/ },
-/* 7 */
-/***/ function(module, exports) {
-
-	var $Object = Object;
-	module.exports = {
-	  create:     $Object.create,
-	  getProto:   $Object.getPrototypeOf,
-	  isEnum:     {}.propertyIsEnumerable,
-	  getDesc:    $Object.getOwnPropertyDescriptor,
-	  setDesc:    $Object.defineProperty,
-	  setDescs:   $Object.defineProperties,
-	  getKeys:    $Object.keys,
-	  getNames:   $Object.getOwnPropertyNames,
-	  getSymbols: $Object.getOwnPropertySymbols,
-	  each:       [].forEach
-	};
-
-/***/ },
-/* 8 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -8308,16 +8135,16 @@
 
 
 /***/ },
-/* 9 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
 
 	/* script */
-	__vue_exports__ = __webpack_require__(10)
+	__vue_exports__ = __webpack_require__(7)
 
 	/* template */
-	var __vue_template__ = __webpack_require__(18)
+	var __vue_template__ = __webpack_require__(15)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -8351,7 +8178,7 @@
 
 
 /***/ },
-/* 10 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8364,20 +8191,24 @@
 
 	var _store2 = _interopRequireDefault(_store);
 
-	var _CategoryModal = __webpack_require__(11);
+	var _CategoryModal = __webpack_require__(8);
 
 	var _CategoryModal2 = _interopRequireDefault(_CategoryModal);
 
-	var _BookmarkModal = __webpack_require__(15);
+	var _BookmarkModal = __webpack_require__(12);
 
 	var _BookmarkModal2 = _interopRequireDefault(_BookmarkModal);
 
-	var _EventHub = __webpack_require__(13);
+	var _EventHub = __webpack_require__(10);
 
 	var _EventHub2 = _interopRequireDefault(_EventHub);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	//
+	//
+	//
+	//
 	//
 	//
 	//
@@ -8435,45 +8266,40 @@
 			BookmarkModal: _BookmarkModal2.default
 		},
 
-		beforeUpdated: function beforeUpdated() {
-			console.log(this.categories);
-		},
-		/*
-	 	computed:{
-	 		classNameColor:function(){
-	 			return
-	 		}
-	 	},*/
-
 		methods: {
 			addBookmark: function addBookmark() {
-				console.log('addBookmark');
 				_EventHub2.default.$emit('add-bookmark');
 			},
 			addCategory: function addCategory() {
 				_EventHub2.default.$emit('add-category');
 			},
-			deleteCategory: function deleteCategory(category) {
-				_store2.default.deleteCategory(category);
+			editCategory: function editCategory(categoryId) {
+				console.log(categoryId);
+				_EventHub2.default.$emit('edit-category', categoryId);
 			},
-			categorySelected: function categorySelected(category) {
-				this.selectedCategory = category;
-				_EventHub2.default.$emit('category-selected', category);
+			deleteCategory: function deleteCategory(categoryId) {
+				if (confirm('Are you sure to delete this category?')) {
+					_store2.default.deleteCategory(categoryId);
+				}
+			},
+			categorySelected: function categorySelected(categoryId) {
+				this.selectedCategory = categoryId;
+				_EventHub2.default.$emit('category-selected', categoryId);
 			}
 		}
 	};
 
 /***/ },
-/* 11 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
 
 	/* script */
-	__vue_exports__ = __webpack_require__(12)
+	__vue_exports__ = __webpack_require__(9)
 
 	/* template */
-	var __vue_template__ = __webpack_require__(14)
+	var __vue_template__ = __webpack_require__(11)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -8507,7 +8333,7 @@
 
 
 /***/ },
-/* 12 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8520,12 +8346,41 @@
 
 	var _store2 = _interopRequireDefault(_store);
 
-	var _EventHub = __webpack_require__(13);
+	var _EventHub = __webpack_require__(10);
 
 	var _EventHub2 = _interopRequireDefault(_EventHub);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 	//
 	//
 	//
@@ -8559,6 +8414,7 @@
 	exports.default = {
 		data: function data() {
 			return {
+				catId: 0,
 				catName: '',
 				catColor: '',
 				categoryColors: ['red', 'orange', 'yellow', 'olive', 'green', 'teal', 'blue', 'violet', 'purple', 'pink', 'brown', 'grey', 'black']
@@ -8568,36 +8424,57 @@
 
 		methods: {
 			addCategory: function addCategory() {
-				var newCategory = {};
-				newCategory[this.catName] = this.catColor;
+				var newCategory = {
+					catName: this.catName,
+					catColor: this.catColor
+				};
+				// newCategory[this.catName] = this.catColor
 				_store2.default.addCategory(newCategory);
-				$('#cat-modal').modal('hide');
+				$('#addcat-modal').modal('hide');
 			},
 
 			addCategoryForm: function addCategoryForm() {
 				this.catName = this.catColor = '';
-				$('#cat-modal').modal('show');
+
+				$('#addcat-modal').modal('show');
+			},
+
+			editCategory: function editCategory() {
+				var newCategory = {
+					catName: this.catName,
+					catColor: this.catColor
+				};
+				_store2.default.editCategory(this.catId, newCategory);
+				$('#editcat-modal').modal('hide');
+			},
+
+			editCategoryForm: function editCategoryForm(catId) {
+				var _this = this;
+
+				_store2.default.getCategory(catId, function (err, category) {
+					if (err) {} else {
+						_this.catId = category.id;
+						_this.catName = category.catName;
+						_this.catColor = category.catColor;
+						$('#editcat-modal').modal('show');
+					}
+				});
 			}
 		},
 
 		mounted: function mounted() {
 			_EventHub2.default.$on('add-category', this.addCategoryForm);
+			_EventHub2.default.$on('edit-category', this.editCategoryForm);
 		},
 
 		beforeDestroy: function beforeDestroy() {
 			_EventHub2.default.$off('add-category', this.addCategoryForm);
-		},
-
-		events: {
-			'add-category': function addCategory() {
-				this.catName = this.catColor = '';
-				$('#cat-modal').modal('show');
-			}
+			_EventHub2.default.$off('edit-category', this.editCategoryForm);
 		}
 	};
 
 /***/ },
-/* 13 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8615,19 +8492,19 @@
 	exports.default = new _vue2.default(); // Understanding Components Communication in Vue 2.0 http://taha-sh.com/blog/understanding-components-communication-in-vue-20
 
 /***/ },
-/* 14 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
-	  return _h('div', {
+	  return _h('div', [_h('div', {
 	    staticClass: "ui small modal",
 	    attrs: {
-	      "id": "cat-modal"
+	      "id": "addcat-modal"
 	    }
 	  }, [_m(0), " ", _m(1), " ", _h('div', {
 	    staticClass: "content"
 	  }, [_h('form', {
-	    staticClass: "ui form"
+	    staticClass: "ui form addcatform"
 	  }, [_h('div', {
 	    staticClass: "field"
 	  }, [_m(2), " ", _h('input', {
@@ -8639,6 +8516,7 @@
 	    }],
 	    attrs: {
 	      "type": "text",
+	      "required": "",
 	      "placeholder": "Enter a category name..."
 	    },
 	    domProps: {
@@ -8660,6 +8538,9 @@
 	      expression: "catColor"
 	    }],
 	    staticClass: "ui simple dropdown",
+	    attrs: {
+	      "required": ""
+	    },
 	    on: {
 	      "change": function($event) {
 	        catColor = Array.prototype.filter.call($event.target.options, function(o) {
@@ -8670,7 +8551,7 @@
 	      }
 	    }
 	  }, [_m(4), " ", _l((categoryColors), function(color) {
-	    return _h('option', ["\n\t\t\t\t\t\t" + _s(color) + "\n\t\t\t\t\t"])
+	    return _h('option', ["\r\n\t\t\t\t\t\t\t" + _s(color) + "\r\n\t\t\t\t\t\t"])
 	  })])])])]), " ", _h('div', {
 	    staticClass: "actions"
 	  }, [_h('div', {
@@ -8678,7 +8559,72 @@
 	    on: {
 	      "click": addCategory
 	    }
-	  }, ["Save"])])])
+	  }, ["Save"])])]), " ", _h('div', {
+	    staticClass: "ui small modal",
+	    attrs: {
+	      "id": "editcat-modal"
+	    }
+	  }, [_m(5), " ", _m(6), " ", _h('div', {
+	    staticClass: "content"
+	  }, [_h('form', {
+	    staticClass: "ui form editcatform"
+	  }, [_h('div', {
+	    staticClass: "field"
+	  }, [_m(7), " ", _h('input', {
+	    directives: [{
+	      name: "model",
+	      rawName: "v-model",
+	      value: (catName),
+	      expression: "catName"
+	    }],
+	    attrs: {
+	      "required": "",
+	      "type": "text",
+	      "placeholder": "Enter a category name..."
+	    },
+	    domProps: {
+	      "value": _s(catName)
+	    },
+	    on: {
+	      "input": function($event) {
+	        if ($event.target.composing) return;
+	        catName = $event.target.value
+	      }
+	    }
+	  })]), " ", _h('div', {
+	    staticClass: "field"
+	  }, [_m(8), " ", _h('select', {
+	    directives: [{
+	      name: "model",
+	      rawName: "v-model",
+	      value: (catColor),
+	      expression: "catColor"
+	    }],
+	    staticClass: "ui simple dropdown",
+	    attrs: {
+	      "required": ""
+	    },
+	    on: {
+	      "change": function($event) {
+	        catColor = Array.prototype.filter.call($event.target.options, function(o) {
+	          return o.selected
+	        }).map(function(o) {
+	          return "_value" in o ? o._value : o.value
+	        })[0]
+	      }
+	    }
+	  }, [_m(9), " ", _l((categoryColors), function(color) {
+	    return _h('option', ["\r\n\t\t\t\t\t\t\t" + _s(color) + "\r\n\t\t\t\t\t\t"])
+	  })])])])]), " ", _h('div', {
+	    staticClass: "actions"
+	  }, [_h('div', {
+	    staticClass: "ui purple inverted button",
+	    on: {
+	      "click": function($event) {
+	        editCategory(catId)
+	      }
+	    }
+	  }, ["Save"])])])])
 	}},staticRenderFns: [function (){with(this) {
 	  return _h('i', {
 	    staticClass: "close icon"
@@ -8686,7 +8632,25 @@
 	}},function (){with(this) {
 	  return _h('div', {
 	    staticClass: "header"
-	  }, ["\n\t\tAdd a new category\n\t"])
+	  }, ["\r\n\t\t\tAdd a new category\r\n\t\t"])
+	}},function (){with(this) {
+	  return _h('label', ["Category name"])
+	}},function (){with(this) {
+	  return _h('label', ["Category Color"])
+	}},function (){with(this) {
+	  return _h('option', {
+	    attrs: {
+	      "value": ""
+	    }
+	  }, ["Select a color"])
+	}},function (){with(this) {
+	  return _h('i', {
+	    staticClass: "close icon"
+	  })
+	}},function (){with(this) {
+	  return _h('div', {
+	    staticClass: "header"
+	  }, ["\r\n\t\t\tEdit a category\r\n\t\t"])
 	}},function (){with(this) {
 	  return _h('label', ["Category name"])
 	}},function (){with(this) {
@@ -8706,16 +8670,16 @@
 	}
 
 /***/ },
-/* 15 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
 
 	/* script */
-	__vue_exports__ = __webpack_require__(16)
+	__vue_exports__ = __webpack_require__(13)
 
 	/* template */
-	var __vue_template__ = __webpack_require__(17)
+	var __vue_template__ = __webpack_require__(14)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -8749,7 +8713,7 @@
 
 
 /***/ },
-/* 16 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8762,12 +8726,45 @@
 
 	var _store2 = _interopRequireDefault(_store);
 
-	var _EventHub = __webpack_require__(13);
+	var _EventHub = __webpack_require__(10);
 
 	var _EventHub2 = _interopRequireDefault(_EventHub);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 	//
 	//
 	//
@@ -8809,6 +8806,7 @@
 	exports.default = {
 	  data: function data() {
 	    return {
+	      bookmarkId: 0,
 	      bookmarkTitle: '',
 	      bookmarkUrl: '',
 	      bookmarkCategory: ''
@@ -8826,47 +8824,66 @@
 	        category: this.bookmarkCategory
 	      };
 	      _store2.default.addBookmark(newBookmark);
-	      $('#bookmark-modal').modal('hide');
-	      //return true;
+	      $('#addbookmark-modal').modal('hide');
 	    },
 
 
 	    addBookmarkForm: function addBookmarkForm() {
 	      this.bookmarkTitle = this.bookmarkUrl = this.bookmarkCategory = '';
-	      $('#bookmark-modal').modal('show');
+	      $('#addbookmark-modal').modal('show');
+	    },
+
+	    editBookmark: function editBookmark() {
+	      var newBookmark = {
+	        title: this.bookmarkTitle,
+	        url: this.bookmarkUrl,
+	        category: this.bookmarkCategory
+	      };
+	      _store2.default.editBookmark(this.bookmarkId, newBookmark);
+	      $('#editbookmark-modal').modal('hide');
+	    },
+
+
+	    editBookmarkForm: function editBookmarkForm(id) {
+	      var _this = this;
+
+	      // console.log(id);
+	      // this.bookmarkTitle = this.bookmarkUrl = this.bookmarkCategory = '';
+	      _store2.default.getBookmark(id, function (err, bookmark) {
+	        if (err) {} else {
+	          _this.bookmarkId = id;
+	          // console.log(bookmark);
+	          _this.bookmarkTitle = bookmark.title;
+	          _this.bookmarkUrl = bookmark.url;
+	          _this.bookmarkCategory = bookmark.category;
+	          $('#editbookmark-modal').modal('show');
+	        }
+	      });
 	    }
 
 	  },
 
 	  mounted: function mounted() {
 	    _EventHub2.default.$on('add-bookmark', this.addBookmarkForm);
+	    _EventHub2.default.$on('edit-bookmark', this.editBookmarkForm);
 	  },
 
 	  beforeDestroy: function beforeDestroy() {
 	    _EventHub2.default.$off('add-bookmark', this.addBookmarkForm);
-	  },
-
-	  events: {
-
-	    'add-bookmark': function addBookmark() {
-	      //  console.log('111');
-	      this.bookmarkTitle = this.bookmarkUrl = this.bookmarkCategory = '';
-	      $('#bookmark-modal').modal('show');
-	    }
-
+	    _EventHub2.default.$off('edit-bookmark', this.editBookmarkForm);
 	  }
 
 	};
 
 /***/ },
-/* 17 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
-	  return _h('div', {
+	  return _h('div', [_h('div', {
 	    staticClass: "ui small modal",
 	    attrs: {
-	      "id": "bookmark-modal"
+	      "id": "addbookmark-modal"
 	    }
 	  }, [_m(0), " ", _m(1), " ", _h('div', {
 	    staticClass: "content"
@@ -8883,6 +8900,7 @@
 	    }],
 	    attrs: {
 	      "type": "text",
+	      "required": "",
 	      "placeholder": "Enter a title for your bookmark..."
 	    },
 	    domProps: {
@@ -8905,6 +8923,7 @@
 	    }],
 	    attrs: {
 	      "type": "text",
+	      "required": "",
 	      "placeholder": "Enter the URL for your bookmark..."
 	    },
 	    domProps: {
@@ -8926,6 +8945,9 @@
 	      expression: "bookmarkCategory"
 	    }],
 	    staticClass: "ui simple dropdown",
+	    attrs: {
+	      "required": ""
+	    },
 	    on: {
 	      "change": function($event) {
 	        bookmarkCategory = Array.prototype.filter.call($event.target.options, function(o) {
@@ -8935,8 +8957,8 @@
 	        })[0]
 	      }
 	    }
-	  }, [_m(5), " ", _l((categories), function(color, name) {
-	    return [_h('option', [_s(name)])]
+	  }, [_m(5), " ", _l((categories), function(category, id) {
+	    return [_h('option', [_s(category.catName)])]
 	  })])])])]), " ", _h('div', {
 	    staticClass: "actions"
 	  }, [_h('div', {
@@ -8944,7 +8966,95 @@
 	    on: {
 	      "click": addBookmark
 	    }
-	  }, ["Add"])])])
+	  }, ["Save"])])]), " ", _h('div', {
+	    staticClass: "ui small modal",
+	    attrs: {
+	      "id": "editbookmark-modal"
+	    }
+	  }, [_m(6), " ", _m(7), " ", _h('div', {
+	    staticClass: "content"
+	  }, [_h('form', {
+	    staticClass: "ui form"
+	  }, [_h('div', {
+	    staticClass: "field"
+	  }, [_m(8), " ", _h('input', {
+	    directives: [{
+	      name: "model",
+	      rawName: "v-model",
+	      value: (bookmarkTitle),
+	      expression: "bookmarkTitle"
+	    }],
+	    attrs: {
+	      "type": "text",
+	      "required": "",
+	      "placeholder": "Enter a title for your bookmark..."
+	    },
+	    domProps: {
+	      "value": _s(bookmarkTitle)
+	    },
+	    on: {
+	      "input": function($event) {
+	        if ($event.target.composing) return;
+	        bookmarkTitle = $event.target.value
+	      }
+	    }
+	  })]), " ", _h('div', {
+	    staticClass: "field"
+	  }, [_m(9), " ", _h('input', {
+	    directives: [{
+	      name: "model",
+	      rawName: "v-model",
+	      value: (bookmarkUrl),
+	      expression: "bookmarkUrl"
+	    }],
+	    attrs: {
+	      "type": "text",
+	      "required": "",
+	      "placeholder": "Enter the URL for your bookmark..."
+	    },
+	    domProps: {
+	      "value": _s(bookmarkUrl)
+	    },
+	    on: {
+	      "input": function($event) {
+	        if ($event.target.composing) return;
+	        bookmarkUrl = $event.target.value
+	      }
+	    }
+	  })]), " ", _h('div', {
+	    staticClass: "field"
+	  }, [_m(10), " ", _h('select', {
+	    directives: [{
+	      name: "model",
+	      rawName: "v-model",
+	      value: (bookmarkCategory),
+	      expression: "bookmarkCategory"
+	    }],
+	    staticClass: "ui simple dropdown",
+	    attrs: {
+	      "required": ""
+	    },
+	    on: {
+	      "change": function($event) {
+	        bookmarkCategory = Array.prototype.filter.call($event.target.options, function(o) {
+	          return o.selected
+	        }).map(function(o) {
+	          return "_value" in o ? o._value : o.value
+	        })[0]
+	      }
+	    }
+	  }, [_m(11), " ", _l((categories), function(category, id) {
+	    return [_h('option', [_s(category.catName)])]
+	  })])])])]), " ", _h('div', {
+	    staticClass: "actions"
+	  }, [_h('div', {
+	    staticClass: "ui inverted purple button",
+	    on: {
+	      "click": function($event) {
+	        editBookmark(bookmarkId)
+	      }
+	    }
+	  }, ["Save"])])])])
 	}},staticRenderFns: [function (){with(this) {
 	  return _h('i', {
 	    staticClass: "close icon"
@@ -8952,7 +9062,27 @@
 	}},function (){with(this) {
 	  return _h('div', {
 	    staticClass: "header"
-	  }, ["\n    Add a new bookmark\n  "])
+	  }, ["\r\n      Add a new bookmark\r\n    "])
+	}},function (){with(this) {
+	  return _h('label', ["Bookmark Title"])
+	}},function (){with(this) {
+	  return _h('label', ["Bookmark URL"])
+	}},function (){with(this) {
+	  return _h('label', ["Bookmark category"])
+	}},function (){with(this) {
+	  return _h('option', {
+	    attrs: {
+	      "value": ""
+	    }
+	  }, ["Select a category"])
+	}},function (){with(this) {
+	  return _h('i', {
+	    staticClass: "close icon"
+	  })
+	}},function (){with(this) {
+	  return _h('div', {
+	    staticClass: "header"
+	  }, ["\r\n      Edit a bookmark\r\n    "])
 	}},function (){with(this) {
 	  return _h('label', ["Bookmark Title"])
 	}},function (){with(this) {
@@ -8974,7 +9104,7 @@
 	}
 
 /***/ },
-/* 18 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
@@ -9003,27 +9133,37 @@
 	        categorySelected('')
 	      }
 	    }
-	  }, ["All"])])]), " ", _l((categories), function(color, name) {
+	  }, ["All"])])]), " ", _l((categories), function(category, id) {
 	    return _h('div', {
 	      staticClass: "item clickable"
 	    }, [_h('div', {
 	      staticClass: "content"
 	    }, [_h('a', {
-	      class: 'ui ' + color + ' empty circular label'
+	      class: 'ui ' + category.catColor + ' empty circular label'
 	    }), " ", _h('span', {
 	      class: {
-	        selected: selectedCategory === name
+	        selected: selectedCategory === id
 	      },
 	      on: {
+	        "dblclick": function($event) {
+	          editCategory(id)
+	        },
 	        "click": function($event) {
-	          categorySelected(name)
+	          categorySelected(id)
 	        }
 	      }
-	    }, ["\n\t\t\t\t\t\t\t" + _s(name) + "\n\t\t\t\t\t\t"]), " ", (name !== 'Uncategorized') ? _h('i', {
+	    }, ["\n\t\t\t\t\t\t\t" + _s(category.catName) + "\n\t\t\t\t\t\t"]), " ", (category.catName !== 'Uncategorized') ? _h('i', {
 	      staticClass: "remove icon right-float",
 	      on: {
 	        "click": function($event) {
-	          deleteCategory(name)
+	          deleteCategory(id)
+	        }
+	      }
+	    }) : _e(), " ", (category.catName !== 'Uncategorized') ? _h('i', {
+	      staticClass: "edit icon right-float",
+	      on: {
+	        "click": function($event) {
+	          editCategory(id)
 	        }
 	      }
 	    }) : _e()])])
@@ -9062,16 +9202,16 @@
 	}
 
 /***/ },
-/* 19 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
 
 	/* script */
-	__vue_exports__ = __webpack_require__(20)
+	__vue_exports__ = __webpack_require__(17)
 
 	/* template */
-	var __vue_template__ = __webpack_require__(26)
+	var __vue_template__ = __webpack_require__(23)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -9105,7 +9245,7 @@
 
 
 /***/ },
-/* 20 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9114,11 +9254,11 @@
 		value: true
 	});
 
-	var _Bookmark = __webpack_require__(21);
+	var _Bookmark = __webpack_require__(18);
 
 	var _Bookmark2 = _interopRequireDefault(_Bookmark);
 
-	var _filters = __webpack_require__(25);
+	var _filters = __webpack_require__(22);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -9154,10 +9294,6 @@
 		components: {
 			Bookmark: _Bookmark2.default
 		},
-		created: function created() {
-			console.log(this.bookmarks1);
-			console.log(this.categories);
-		},
 		computed: {
 			bookmarks: _filters.filterByTitle
 		}
@@ -9167,16 +9303,16 @@
 	};
 
 /***/ },
-/* 21 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __vue_exports__, __vue_options__
 
 	/* script */
-	__vue_exports__ = __webpack_require__(22)
+	__vue_exports__ = __webpack_require__(19)
 
 	/* template */
-	var __vue_template__ = __webpack_require__(24)
+	var __vue_template__ = __webpack_require__(21)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -9210,7 +9346,7 @@
 
 
 /***/ },
-/* 22 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9219,49 +9355,56 @@
 		value: true
 	});
 
-	var _electron = __webpack_require__(23);
+	var _electron = __webpack_require__(20);
 
 	var _store = __webpack_require__(4);
 
 	var _store2 = _interopRequireDefault(_store);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	var _EventHub = __webpack_require__(10);
 
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
-	//
+	var _EventHub2 = _interopRequireDefault(_EventHub);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	exports.default = {
 		props: ['id', 'title', 'url', 'category', 'categoryColor'],
 		methods: {
 			deleteBookmark: function deleteBookmark() {
-				console.log('deleteBookmark');
-				_store2.default.deleteBookmark(this.id);
+				if (confirm('Are you sure to delete this bookmark?')) {
+					_store2.default.deleteBookmark(this.id);
+				}
+			},
+			editBookmark: function editBookmark() {
+				_EventHub2.default.$emit('edit-bookmark', this.id);
 			},
 			openLink: function openLink() {
 				_electron.shell.openExternal(this.url);
 			}
 		}
-	};
+	}; //
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
+	//
 
 /***/ },
-/* 23 */
+/* 20 */
 /***/ function(module, exports) {
 
 	module.exports = require("electron");
 
 /***/ },
-/* 24 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
@@ -9280,6 +9423,14 @@
 	        deleteBookmark($event)
 	      }
 	    }
+	  }), " ", _h('i', {
+	    staticClass: "icon edit right-float",
+	    on: {
+	      "click": function($event) {
+	        $event.stopPropagation();
+	        editBookmark($event)
+	      }
+	    }
 	  }), " ", _h('a', {
 	    staticClass: "header"
 	  }, [_s(title)]), " ", _h('div', {
@@ -9296,7 +9447,7 @@
 	}
 
 /***/ },
-/* 25 */
+/* 22 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -9331,7 +9482,7 @@
 	}
 
 /***/ },
-/* 26 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
@@ -9391,7 +9542,7 @@
 	}
 
 /***/ },
-/* 27 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
