@@ -4,9 +4,7 @@ const store = new EventEmitter();
 
 store.getCategories = function(cb){
 	var categories = {};
-
 	db.each("select id, catName, catColor from categories", function(err, row){
-		// categories[row.catName] = row.catColor;
 		categories[row.id] = row;
 	}, function(err, rowCount){
 		cb(null, categories);
@@ -21,7 +19,7 @@ store.getCategory = function(catId, cb){
 
 store.getBookmarks = function(cb){
 	var bookmarks = {};
-	db.each("select id, category, title, url from bookmarks", function(err, row){
+	db.each("select id, category_id, title, url from bookmarks", function(err, row){
 		bookmarks[row.id] = row;
 	}, function(err, rowCount){
 		cb(null, bookmarks);
@@ -29,7 +27,7 @@ store.getBookmarks = function(cb){
 }
 
 store.getBookmark = function(bookmarkId, cb){
-	db.get("select id, category, title, url from bookmarks where id=?", {1:bookmarkId}, function(err, row){
+	db.get("select id, category_id, title, url from bookmarks where id=?", {1:bookmarkId}, function(err, row){
 		cb(null, row);
 	});
 }
@@ -67,16 +65,16 @@ store.deleteCategory = (catId) => {
 
 store.addBookmark = (bookmark) => {
 	db.serialize(function(){
-		var stmt = db.prepare("insert into bookmarks('category', 'title', 'url') values(?, ?, ?)");
-		stmt.run(bookmark.category, bookmark.title, bookmark.url);
+		var stmt = db.prepare("insert into bookmarks('category_id', 'title', 'url') values(?, ?, ?)");
+		stmt.run(bookmark.category_id, bookmark.title, bookmark.url);
 		store.emit('data-updated');
 	});
 }
 
 store.editBookmark = (bookmarkId, bookmark) => {
 	db.serialize(function(){
-		db.run("update bookmarks set category=?, title=?, url=? where id=?", {
-			1:bookmark.category,
+		db.run("update bookmarks set category_id=?, title=?, url=? where id=?", {
+			1:bookmark.category_id,
 			2:bookmark.title,
 			3:bookmark.url,
 			4:bookmarkId

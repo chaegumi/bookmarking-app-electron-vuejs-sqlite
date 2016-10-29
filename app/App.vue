@@ -30,8 +30,8 @@
 
 		data(){
 			return {
-				categories: new Object(),
-				bookmarks: new Object(),
+				categories: {},
+				bookmarks: {},
 				selectedCategory:''
 			}
 		},

@@ -13,6 +13,7 @@
   "dependencies": {
     "jquery": "^3.1.1",
     "sqlite3": "^3.1.7",
+    "vee-validate": "^2.0.0-beta.13",
     "vue": "^2.0.3"
   },
   "devDependencies": {

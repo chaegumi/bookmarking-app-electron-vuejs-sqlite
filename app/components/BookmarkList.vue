@@ -11,8 +11,8 @@
         :id="id"
         :title="bookmark.title"
         :url="bookmark.url"
-        :category="bookmark.category"
-        :category-color="categories[bookmark.category]">
+        :category="categories[bookmark.category_id].catName"
+        :category-color="categories[bookmark.category_id].catColor">
       </bookmark>
 		</div>
 	</div>

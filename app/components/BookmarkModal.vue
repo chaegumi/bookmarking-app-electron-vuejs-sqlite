@@ -7,30 +7,34 @@
     </div>
     <div class="content">
 
-      <form class="ui form">
+      <form class="ui form" @submit.prevent="addBookmark">
         <div class="field">
           <label>Bookmark Title</label>
-          <input v-model="bookmarkTitle" type="text" required placeholder="Enter a title for your bookmark...">
+          <input v-model="bookmarkTitle" v-validate.initial="bookmarkTitle" data-rules="required" type="text" placeholder="Enter a title for your bookmark...">
+		  <span class="ui pointing red basic label" v-show="errors.has('bookmarkTitle')">{{ errors.first('bookmarkTitle') }}</span>
         </div>
         <div class="field">
           <label>Bookmark URL</label>
-          <input v-model="bookmarkUrl" type="text" required placeholder="Enter the URL for your bookmark...">
+          <input v-model="bookmarkUrl" v-validate.initial="bookmarkUrl" data-rules="required|url" type="text"  placeholder="Enter the URL for your bookmark...">
+		  <span class="ui pointing red basic label" v-show="errors.has('bookmarkUrl')">{{ errors.first('bookmarkUrl') }}</span>
         </div>
         <div class="field">
           <label>Bookmark category</label>
-          <select v-model="bookmarkCategory" required class="ui simple dropdown">
+          <select v-model="bookmarkCategory" v-validate.initial="bookmarkCategory" data-rules="required" class="ui simple dropdown">
             <option value="">Select a category</option>
-            <template v-for="(category, id) in categories">
-              <option>{{ category.catName }}</option>
-            </template>
+            
+            <option v-for="(category, id) in categories" v-bind:value="id">{{ category.catName }}</option>
+            
           </select>
+		  <span class="ui pointing red basic label" v-show="errors.has('bookmarkCategory')">{{ errors.first('bookmarkCategory') }}</span>
         </div>
+		<div class="">
+		  <button type="submit" class="ui inverted purple button">Save</button>
+		</div>
       </form>
 
     </div>
-    <div class="actions">
-      <div @click="addBookmark" class="ui inverted purple button">Save</div>
-    </div>
+
   </div>
   
   <div id="editbookmark-modal" class="ui small modal">
@@ -40,35 +44,42 @@
     </div>
     <div class="content">
 
-      <form class="ui form">
+      <form class="ui form" @submit.prevent="editBookmark(bookmarkId)">
         <div class="field">
           <label>Bookmark Title</label>
-          <input v-model="bookmarkTitle" type="text" required placeholder="Enter a title for your bookmark...">
+          <input v-model="bookmarkTitle" v-validate.initial="bookmarkTitle" data-rules="required" type="text" placeholder="Enter a title for your bookmark...">
+		  <span class="ui pointing red basic label" v-show="errors.has('bookmarkTitle')">{{ errors.first('bookmarkTitle') }}</span>
         </div>
         <div class="field">
           <label>Bookmark URL</label>
-          <input v-model="bookmarkUrl" type="text" required placeholder="Enter the URL for your bookmark...">
+          <input v-model="bookmarkUrl" v-validate.initial="bookmarkUrl" data-rules="required|url" type="text"  placeholder="Enter the URL for your bookmark...">
+		  <span class="ui pointing red basic label" v-show="errors.has('bookmarkUrl')">{{ errors.first('bookmarkUrl') }}</span>
         </div>
         <div class="field">
           <label>Bookmark category</label>
-          <select v-model="bookmarkCategory" required class="ui simple dropdown">
+          <select v-model="bookmarkCategory" v-validate.initial="bookmarkCategory" data-rules="required" class="ui simple dropdown">
             <option value="">Select a category</option>
-            <template v-for="(category, id) in categories">
-              <option>{{ category.catName }}</option>
-            </template>
+            
+            <option v-for="(category, id) in categories" v-bind:value="id">{{ category.catName }}</option>
+            
           </select>
+		  <span class="ui pointing red basic label" v-show="errors.has('bookmarkCategory')">{{ errors.first('bookmarkCategory') }}</span>
         </div>
+		<div class="">
+		  <button type="submit" class="ui inverted purple button">Save</button>
+		</div>
       </form>
 
-    </div>
-    <div class="actions">
-      <div @click="editBookmark(bookmarkId)" class="ui inverted purple button">Save</div>
     </div>
   </div>  
 </div>
 </template>
 
 <script>
+  import Vue from 'vue';
+  import VeeValidate from 'vee-validate';
+
+  Vue.use(VeeValidate);
   import store from '../store'
   import eventHub from '../shared/EventHub';
 
@@ -79,7 +90,7 @@
 		bookmarkId:0,
         bookmarkTitle: '',
         bookmarkUrl: '',
-        bookmarkCategory: ''
+        bookmarkCategory: 0
       }
     },
 
@@ -88,13 +99,17 @@
     methods: {
 
       addBookmark () {
-        const newBookmark = {
-          title: this.bookmarkTitle,
-          url: this.bookmarkUrl,
-          category: this.bookmarkCategory
-        }
-        store.addBookmark(newBookmark)
-        $('#addbookmark-modal').modal('hide');
+		this.$validator.validateAll();
+			
+		if(!this.errors.any()){
+			const newBookmark = {
+			  title: this.bookmarkTitle,
+			  url: this.bookmarkUrl,
+			  category_id: this.bookmarkCategory
+			}
+			store.addBookmark(newBookmark)
+			$('#addbookmark-modal').modal('hide');
+		}
       },
 
       addBookmarkForm:function(){
@@ -103,13 +118,17 @@
       },
 	  
 	  editBookmark () {
-		const newBookmark = {
-			title:this.bookmarkTitle,
-			url:this.bookmarkUrl,
-			category:this.bookmarkCategory
-		};
-		store.editBookmark(this.bookmarkId, newBookmark);
-		$('#editbookmark-modal').modal('hide');
+		this.$validator.validateAll();
+			
+		if(!this.errors.any()){	  
+			const newBookmark = {
+				title:this.bookmarkTitle,
+				url:this.bookmarkUrl,
+				category_id:this.bookmarkCategory
+			};
+			store.editBookmark(this.bookmarkId, newBookmark);
+			$('#editbookmark-modal').modal('hide');
+		}
 	  },
 	  
 	  editBookmarkForm:function(id){
@@ -120,10 +139,9 @@
 				
 			}else{
 				this.bookmarkId = id;
-				// console.log(bookmark);
 				this.bookmarkTitle = bookmark.title;
 				this.bookmarkUrl = bookmark.url;
-				this.bookmarkCategory = bookmark.category;
+				this.bookmarkCategory = bookmark.category_id;
 				$('#editbookmark-modal').modal('show');
 			}
 		});
