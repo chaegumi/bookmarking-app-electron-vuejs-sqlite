@@ -4,7 +4,7 @@ const store = new EventEmitter();
 
 store.getCategories = function(cb){
 	var categories = {};
-	db.each("select id, catName, catColor from categories", function(err, row){
+	db.each("select id, catName, catColor, (select count(id) from bookmarks where bookmarks.category_id=categories.id) as bookmarkCount from categories", function(err, row){
 		categories[row.id] = row;
 	}, function(err, rowCount){
 		cb(null, categories);

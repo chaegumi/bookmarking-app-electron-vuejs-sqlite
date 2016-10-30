@@ -7592,7 +7592,7 @@
 	__vue_exports__ = __webpack_require__(3)
 
 	/* template */
-	var __vue_template__ = __webpack_require__(25)
+	var __vue_template__ = __webpack_require__(24)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -7647,7 +7647,9 @@
 
 	var _BookmarkList2 = _interopRequireDefault(_BookmarkList);
 
-	var _filters = __webpack_require__(23);
+	var _EventHub = __webpack_require__(11);
+
+	var _EventHub2 = _interopRequireDefault(_EventHub);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -7686,17 +7688,10 @@
 		beforeMount: function beforeMount() {
 			this.updateListings();
 		},
-
-		/*	computed:{
-	 		bookmarks:store.getBookmarks(),
-	 		categories:store.getCategories()
-	 	},*/
-		/*
-	 		filters:{
-	 			filterByCategory
-	 		},*/
 		mounted: function mounted() {
 			_store2.default.on('data-updated', this.updateListings);
+			_EventHub2.default.$on('category-selected', this.setSelectedCategory);
+			_EventHub2.default.$on('filter-by-title', this.filterByTitle);
 		},
 
 		methods: {
@@ -7704,7 +7699,10 @@
 				var _this = this;
 
 				_store2.default.getCategories(function (err, categories) {
-					if (err) {} else {
+					if (err) {
+						//console.log(err);
+					} else {
+						// console.log(categories);
 						_this.categories = categories;
 					}
 				});
@@ -7715,7 +7713,45 @@
 				});
 			},
 			setSelectedCategory: function setSelectedCategory(categoryId) {
-				this.selectedCategory = categoryId;
+				var _this2 = this;
+
+				if (!categoryId) {
+					_store2.default.getBookmarks(function (err, bookmarks) {
+						if (err) {} else {
+							_this2.bookmarks = bookmarks;
+						}
+					});
+				} else {
+					this.selectedCategory = categoryId;
+					_store2.default.getBookmarks(function (err, bookmarks) {
+						if (err) {} else {
+							var filteredBookmarks = {};
+							for (var bookmark in bookmarks) {
+								if (bookmarks[bookmark].category_id == categoryId) {
+									filteredBookmarks[bookmark] = bookmarks[bookmark];
+								}
+							}
+
+							_this2.bookmarks = filteredBookmarks;
+						}
+					});
+				}
+			},
+			filterByTitle: function filterByTitle(keyword) {
+				var _this3 = this;
+
+				_store2.default.getBookmarks(function (err, bookmarks) {
+					if (err) {} else {
+						var filteredBookmarks = {};
+						for (var bookmark in bookmarks) {
+							if (bookmarks[bookmark].title.toLowerCase().indexOf(keyword.toLowerCase()) > -1) {
+								filteredBookmarks[bookmark] = bookmarks[bookmark];
+							}
+						}
+
+						_this3.bookmarks = filteredBookmarks;
+					}
+				});
 			}
 		}
 	};
@@ -7736,7 +7772,7 @@
 
 	store.getCategories = function (cb) {
 		var categories = {};
-		db.each("select id, catName, catColor from categories", function (err, row) {
+		db.each("select id, catName, catColor, (select count(id) from bookmarks where bookmarks.category_id=categories.id) as bookmarkCount from categories", function (err, row) {
 			categories[row.id] = row;
 		}, function (err, rowCount) {
 			cb(null, categories);
@@ -8249,6 +8285,7 @@
 	//
 	//
 	//
+	//
 
 	exports.default = {
 		data: function data() {
@@ -8272,7 +8309,6 @@
 				_EventHub2.default.$emit('add-category');
 			},
 			editCategory: function editCategory(categoryId) {
-				console.log(categoryId);
 				_EventHub2.default.$emit('edit-category', categoryId);
 			},
 			deleteCategory: function deleteCategory(categoryId) {
@@ -11534,6 +11570,7 @@
 
 	module.exports={render:function (){with(this) {
 	  return _h('div', [_h('div', {
+	    staticClass: "ui visible sidebar",
 	    attrs: {
 	      "id": "categories"
 	    }
@@ -11577,7 +11614,7 @@
 	          categorySelected(id)
 	        }
 	      }
-	    }, ["\n\t\t\t\t\t\t\t" + _s(category.catName) + "\n\t\t\t\t\t\t"]), " ", (category.catName !== 'Uncategorized') ? _h('i', {
+	    }, ["\n\t\t\t\t\t\t\t" + _s(category.catName) + " (" + _s(category.bookmarkCount) + ")\n\t\t\t\t\t\t"]), " ", (category.catName !== 'Uncategorized') ? _h('i', {
 	      staticClass: "remove icon right-float",
 	      on: {
 	        "click": function($event) {
@@ -11636,7 +11673,7 @@
 	__vue_exports__ = __webpack_require__(18)
 
 	/* template */
-	var __vue_template__ = __webpack_require__(24)
+	var __vue_template__ = __webpack_require__(23)
 	__vue_options__ = __vue_exports__ = __vue_exports__ || {}
 	if (
 	  typeof __vue_exports__.default === "object" ||
@@ -11683,7 +11720,9 @@
 
 	var _Bookmark2 = _interopRequireDefault(_Bookmark);
 
-	var _filters = __webpack_require__(23);
+	var _EventHub = __webpack_require__(11);
+
+	var _EventHub2 = _interopRequireDefault(_EventHub);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -11715,16 +11754,15 @@
 			};
 		},
 
-		props: ['bookmarks1', 'categories'],
+		props: ['bookmarks1', 'categories1'],
 		components: {
 			Bookmark: _Bookmark2.default
 		},
-		computed: {
-			bookmarks: _filters.filterByTitle
+		watch: {
+			query: function query(keyword) {
+				_EventHub2.default.$emit('filter-by-title', keyword);
+			}
 		}
-		/*filters:{
-	 	filterByTitle
-	 }*/
 	};
 
 /***/ },
@@ -11793,7 +11831,29 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	exports.default = {
-		props: ['id', 'title', 'url', 'category', 'categoryColor'],
+		/*data(){
+	 	return {
+	 		category:'',
+	 		categoryColor:''
+	 	}
+	 },*/
+		props: ['id', 'title', 'url', 'categories', 'category_id'],
+		computed: {
+			category: function category() {
+				if (this.categories.hasOwnProperty(this.category_id)) {
+					return this.categories[this.category_id].catName;
+				} else {
+					return '';
+				}
+			},
+			categoryColor: function categoryColor() {
+				if (this.categories.hasOwnProperty(this.category_id)) {
+					return this.categories[this.category_id].catColor;
+				} else {
+					return '';
+				}
+			}
+		},
 		methods: {
 			deleteBookmark: function deleteBookmark() {
 				if (confirm('Are you sure to delete this bookmark?')) {
@@ -11873,41 +11933,6 @@
 
 /***/ },
 /* 23 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	exports.filterByTitle = filterByTitle;
-	exports.filterByCategory = filterByCategory;
-	function filterByTitle(value, title) {
-		return value;
-		//return filterBookmarks(value, 'title', title);
-	}
-
-	function filterByCategory(value, category) {
-		if (!category) return value;
-		return value;
-		//return filterBookmarks(value, 'category', category)
-	}
-
-	function filterBookmarks(bookmarks, filterBy, filterValue) {
-		var filteredBookmarks = {};
-		for (var bookmark in bookmarks) {
-			//	console.log(bookmark);
-			// console.log(bookmarks);
-			//if(bookmarks[bookmark][filterBy].indexOf(filterValue) > -1){
-			//filterBookmarks[bookmark] = bookmarks[bookmark]
-			//}
-			filterBookmarks[bookmark] = bookmarks[bookmark];
-		}
-		return filteredBookmarks;
-	}
-
-/***/ },
-/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
@@ -11949,8 +11974,8 @@
 	        "id": id,
 	        "title": bookmark.title,
 	        "url": bookmark.url,
-	        "category": categories[bookmark.category_id].catName,
-	        "category-color": categories[bookmark.category_id].catColor
+	        "category_id": bookmark.category_id,
+	        "categories": categories1
 	      }
 	    })
 	  })])])
@@ -11967,7 +11992,7 @@
 	}
 
 /***/ },
-/* 25 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports={render:function (){with(this) {
@@ -12017,7 +12042,7 @@
 	  }), " ", _h('bookmark-list', {
 	    attrs: {
 	      "bookmarks1": bookmarks,
-	      "categories": categories
+	      "categories1": categories
 	    }
 	  })])
 	}},staticRenderFns: []}

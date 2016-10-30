@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div id="categories">
+		<div class="ui visible sidebar" id="categories">
 			<div id="cat-header">
 				<h2><i class="bookmark icon"></i> Bookmark</h2>
 			</div>
@@ -11,6 +11,7 @@
 						<i @click="addCategory" class="add icon"></i>
 					</span>
 				</h2>
+				
 				<div class="ui list">
 					<div class="item clickable">
 						<div class="content">
@@ -22,7 +23,7 @@
 						<div class="content">
 							<a v-bind:class="'ui ' + category.catColor + ' empty circular label'"></a>
 							<span @dblclick="editCategory(id)" @click="categorySelected(id)" :class="{selected:selectedCategory === id}">
-								{{category.catName}}
+								{{category.catName}} ({{category.bookmarkCount}})
 							</span>
 								
 							<i v-if="category.catName !== 'Uncategorized'" class="remove icon right-float"
@@ -73,7 +74,6 @@ export default{
 		},
 		
 		editCategory(categoryId){
-			console.log(categoryId);
 			eventHub.$emit('edit-category', categoryId);
 		},
 

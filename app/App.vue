@@ -9,7 +9,7 @@
 		</sidebar>
 		<bookmark-list
 		  :bookmarks1="bookmarks"
-		  :categories="categories">
+		  :categories1="categories">
 		</bookmark-list>
 	</div>
 </template>
@@ -20,7 +20,7 @@
 	import store from './store';
 	import Sidebar from './components/Sidebar.vue';
 	import BookmarkList from './components/BookmarkList.vue'
-	import { filterByCategory } from './filters'
+	import eventHub from './shared/EventHub';
 
 	export default{
 		components:{
@@ -38,23 +38,18 @@
 		beforeMount(){
 			this.updateListings();
 		},
-	/*	computed:{
-			bookmarks:store.getBookmarks(),
-			categories:store.getCategories()
-		},*/
-/*
-		filters:{
-			filterByCategory
-		},*/
 		mounted(){
-			store.on('data-updated', this.updateListings)
+			store.on('data-updated', this.updateListings);
+			eventHub.$on('category-selected', this.setSelectedCategory);
+			eventHub.$on('filter-by-title', this.filterByTitle);
 		},
 		methods:{
 			updateListings(){
 				store.getCategories((err, categories) => {
 					if(err){
-
+						//console.log(err);
 					}else{
+						// console.log(categories);
 						this.categories = categories;
 					}
 				});
@@ -67,7 +62,47 @@
 				});
 			},
 			setSelectedCategory(categoryId){
-				this.selectedCategory = categoryId;
+				if(!categoryId){
+					store.getBookmarks((err, bookmarks) => {
+						if(err){
+
+						}else{
+							this.bookmarks = bookmarks;
+						}
+					});
+				}else{
+					this.selectedCategory = categoryId;
+					store.getBookmarks((err, bookmarks) => {
+						if(err){
+
+						}else{
+							var filteredBookmarks = {};
+							for(var bookmark in bookmarks){
+								if(bookmarks[bookmark].category_id == categoryId){
+									filteredBookmarks[bookmark] = bookmarks[bookmark]; 
+								}
+							}
+							
+							this.bookmarks = filteredBookmarks; 
+						}
+					});										
+				}
+			},
+			filterByTitle(keyword){
+				store.getBookmarks((err, bookmarks) => {
+					if(err){
+
+					}else{
+						var filteredBookmarks = {};
+						for(var bookmark in bookmarks){
+							if(bookmarks[bookmark].title.toLowerCase().indexOf(keyword.toLowerCase()) > -1){
+								filteredBookmarks[bookmark] = bookmarks[bookmark]; 
+							}
+						}
+						
+						this.bookmarks = filteredBookmarks; 
+					}
+				});
 			}
 		}
 	}

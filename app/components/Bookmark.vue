@@ -18,7 +18,29 @@ import store from '../store'
 import eventHub from '../shared/EventHub';
 
 export default{
-	props:['id', 'title', 'url', 'category', 'categoryColor'],
+	/*data(){
+		return {
+			category:'',
+			categoryColor:''
+		}
+	},*/
+	props:['id', 'title', 'url', 'categories', 'category_id'],
+	computed:{
+		category:function(){
+			if(this.categories.hasOwnProperty(this.category_id)){
+				return this.categories[this.category_id].catName;
+			}else{
+				return '';
+			}
+		},
+		categoryColor:function(){
+			if(this.categories.hasOwnProperty(this.category_id)){
+				return this.categories[this.category_id].catColor;
+			}else{
+				return '';
+			}
+		}
+	},
 	methods:{
 		deleteBookmark(){
 			if(confirm('Are you sure to delete this bookmark?')){

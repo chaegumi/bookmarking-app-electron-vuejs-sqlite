@@ -10,9 +10,9 @@
 			<bookmark v-for="(bookmark, id) in bookmarks1"
         :id="id"
         :title="bookmark.title"
-        :url="bookmark.url"
-        :category="categories[bookmark.category_id].catName"
-        :category-color="categories[bookmark.category_id].catColor">
+        :url="bookmark.url" 
+		:category_id="bookmark.category_id" 
+		:categories="categories1">
       </bookmark>
 		</div>
 	</div>
@@ -20,7 +20,7 @@
 
 <script>
 import Bookmark from './Bookmark.vue';
-import { filterByTitle } from '../filters';
+import eventHub from '../shared/EventHub';
 
 export default{
 	data(){
@@ -28,15 +28,14 @@ export default{
 			query:''
 		}
 	},
-	props:['bookmarks1', 'categories'],
+	props:['bookmarks1', 'categories1'],
 	components:{
 		Bookmark
 	},
-	computed:{
-		bookmarks:filterByTitle
+	watch:{
+		query:function(keyword){
+			eventHub.$emit('filter-by-title', keyword);
+		}
 	}
-	/*filters:{
-		filterByTitle
-	}*/
 }
 </script>
