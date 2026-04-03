@@ -14,7 +14,7 @@
     "jquery": "^3.7.1",
     "sqlite3": "^3.1.13",
     "vee-validate": "^2.2.15",
-    "vue": "^2.7.16"
+    "vue": "^3.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
