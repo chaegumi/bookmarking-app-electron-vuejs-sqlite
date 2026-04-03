@@ -9,29 +9,29 @@ importers:
   .:
     dependencies:
       jquery:
-        specifier: ^3.1.1
+        specifier: ^3.7.1
         version: 3.7.1
       sqlite3:
-        specifier: ^3.1.7
+        specifier: ^3.1.13
         version: 3.1.13
       vee-validate:
-        specifier: ^2.0.0-beta.13
+        specifier: ^2.2.15
         version: 2.2.15
       vue:
-        specifier: ^2.0.3
+        specifier: ^2.7.16
         version: 2.7.16
     devDependencies:
       babel-core:
-        specifier: ^6.18.0
+        specifier: ^6.26.3
         version: 6.26.3
       babel-loader:
-        specifier: ^6.2.5
+        specifier: ^6.4.1
         version: 6.4.1(babel-core@6.26.3)(webpack@1.15.0)
       babel-plugin-transform-runtime:
-        specifier: ^6.15.0
+        specifier: ^6.23.0
         version: 6.23.0
       babel-preset-es2015:
-        specifier: ^6.18.0
+        specifier: ^6.24.1
         version: 6.24.1
       babel-runtime:
         specifier: ^5.8.38
@@ -40,28 +40,28 @@ importers:
         specifier: ^0.25.0
         version: 0.25.0
       electron:
-        specifier: ^9.1.0
+        specifier: ^9.4.4
         version: 9.4.4
       vue-hot-reload-api:
-        specifier: ^2.0.6
+        specifier: ^2.3.4
         version: 2.3.4
       vue-html-loader:
-        specifier: ^1.2.3
+        specifier: ^1.2.4
         version: 1.2.4
       vue-loader:
-        specifier: ^9.7.0
+        specifier: ^9.9.5
         version: 9.9.5(babel-core@6.26.3)(css-loader@0.25.0)(lodash@4.18.1)(webpack@1.15.0)
       vue-style-loader:
         specifier: ^1.0.0
         version: 1.0.0
       vue-validator:
-        specifier: ^2.1.5
+        specifier: ^2.1.7
         version: 2.1.7
       webpack:
-        specifier: ^1.13.2
+        specifier: ^1.15.0
         version: 1.15.0
       webpack-dev-server:
-        specifier: ^3.1.11
+        specifier: ^3.11.3
         version: 3.11.3(webpack@1.15.0)
 
 packages:
